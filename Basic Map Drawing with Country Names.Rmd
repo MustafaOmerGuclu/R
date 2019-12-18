@@ -1,0 +1,45 @@
+---
+title: "World Map with Country Names"
+author: "Mustafa Ömer Güçlü"
+date: "18 12 2019"
+output: html_document
+---
+
+```{r message=FALSE, results='hide' }
+
+require(ggplot2)    # Provides plot
+require(maps)       # Provides functions  and dataset "world" that let us plot the maps
+require(ggrepel)    # Provides geom_text_repel for avoiding country names intersection
+require(tidyverse)  # Provides data manipuations on region.lab.data like group_by,summarise
+
+# Selected Countries
+example.countries <- c("Singapore", 
+  "Iceland", 
+  "Ireland", 
+  "Qatar", 
+  "Japan", 
+  "Finland", 
+  "Aruba", 
+  "Bulgaria", 
+  "Romania", 
+  "Hungary", 
+  "Turkey",
+  "Guatemala", 
+  "Honduras", 
+  "Jamaica", 
+  "Russia", 
+  "El Salvador")
+
+# Retrieve the map data
+example.countries <- map_data("world", region = example.countries)
+world_map <- map_data("world")
+
+region.lab.data <- example.countries %>% group_by(region) %>%  summarise(long = mean(long), lat = mean(lat))
+```
+
+```{r message=FALSE, echo=FALSE}
+ggplot(world_map, aes(x = long, y = lat)) +
+   geom_polygon(aes( group = group,fill=region),fill="grey")+
+  geom_text_repel(aes(label = region),data = region.lab.data,  size = 5, hjust = 0.8)+
+  scale_fill_viridis_d()+ theme_void()+theme(legend.position = "center")
+```
