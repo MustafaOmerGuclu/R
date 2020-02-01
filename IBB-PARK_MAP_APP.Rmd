@@ -1,0 +1,73 @@
+---
+title: "IBB PARK APP"
+author: "Mustafa Ömer Güçlü"
+date: "28 01 2020"
+output:
+  html_document: default
+  pdf_document: default
+
+---
+
+
+
+```{r, echo=FALSE}
+## Paketler yüklü değilse install.packages kullanın
+##install.packages(c("tidyverse","jsonlite"),repos="https://cran.r-project.org")
+
+library(tidyverse)
+library(jsonlite)
+
+
+ispark_query_url <- "https://data.ibb.gov.tr/api/3/action/datastore_search_sql?sql=SELECT%20*%20from%20%22c3eb0d72-1ce4-4983-a3a8-6b0b4b19fcb9%22"
+
+raw_value <- fromJSON(ispark_query_url)
+raw_df <- raw_value$result$records %>% rename_all(~gsub("^_","",.)) %>% rename_all(~gsub(" |\\(|\\)|/","_",.)) %>% tbl_df()
+
+```
+
+```{r, echo=FALSE}
+## Paketler yüklü değilse install.packages kullanın
+##install.packages("leaflet")
+library(leaflet)
+##install.packages("leaflet.extras")
+library(leaflet.extras)
+##install.package(knitr)
+raw_df$Enlem<-as.numeric(as.character(raw_df$Enlem))
+raw_df$Boylam<-as.numeric(as.character(raw_df$Boylam))
+
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+```
+
+
+
+```{r, echo=FALSE}
+
+## install.packages("leaflet.extras")
+library(leaflet.extras)
+
+a <- leaflet(options = leafletOptions(minZoom = 0, maxZoom = 18)) %>% 
+   addTiles(urlTemplate = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png") %>% addTerminator() %>% addMiniMap(toggleDisplay = TRUE) %>% # Add default OpenStreetMap map tiles
+  addMarkers(lng=raw_df$Boylam, lat=raw_df$Enlem, popup=paste0("Kapasite: ",raw_df$Park_Kapasitesi, " Araç"),clusterOptions =raw_df$Ilce,group = raw_df$Bolge,label =paste0(raw_df$Park_Adi,"\n","Çalışma Saatleri: ", raw_df$Calisma_Saatleri)) %>% addFullscreenControl( position = "topright", pseudoFullscreen = FALSE)%>% addMeasure(position = "topleft",
+    primaryLengthUnit = "meters",
+    primaryAreaUnit = "sqmeters") 
+
+
+addControlGPS(a, options = gpsOptions(position = "topleft", activate = TRUE, 
+                                               autoCenter = TRUE, maxZoom = 15, 
+                                               setView = TRUE))
+
+
+
+
+```
+
+
+
+
+
+
