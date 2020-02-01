@@ -14,6 +14,7 @@ Best Regards
 [Map with Code](Basic-Map-Drawing-with-Country-Names.html)
 
 ## Istanbul ISPARK Location Leaflet Application in R
+Before start data parse part of the code is taken from Berk Orbay's sharing [Link] (https://gist.github.com/berkorbay/79295d8018ae0879bad592b6b89f0a6c)
 [Only Code](IBB-PARK_MAP_APP.Rmd)
 [Html](IBB-PARK_MAP_APP.html)
 
